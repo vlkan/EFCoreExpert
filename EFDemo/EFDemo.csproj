@@ -10,9 +10,13 @@
   <ItemGroup>
     <Folder Include="Infra\Context\" />
     <Folder Include="Infra\DataGenerators\" />
-    <Folder Include="Infra\EntityTypeConfigurations\" />
     <Folder Include="Infra\Interceptors\" />
     <Folder Include="Infra\Repositories\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.0" />
   </ItemGroup>
 
 </Project>

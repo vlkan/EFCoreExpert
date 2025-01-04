@@ -2,8 +2,7 @@
 
 namespace EFDemo.Infra.Entities;
 
-public class Genre : BaseEntity
+public class Actor : PersonBaseEntity
 {
-    public string Name { get; set; }
     public virtual ICollection<Movie> Movies { get; set; }
 }
