@@ -1,2 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using EFDemo.Infra.Context;
+using Microsoft.EntityFrameworkCore;
+
+var dbContext = new MovieDbContext();
+
+dbContext.Database.OpenConnection();
+
+Console.ReadLine();
