@@ -62,6 +62,16 @@ public class DbContextFactory : IDesignTimeDbContextFactory<MovieDbContext>
             //options.EnableRetryOnFailure(maxRetryCount: 5);
         });
 
+        optionBuilder.LogTo(m => Log(m));
+
         return new MovieDbContext(optionBuilder.Options);
+    }
+
+    void Log(string message)
+    {
+        var color = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine("EFCORE_MESSAGE: {0}", message);
+        Console.ForegroundColor = color;
     }
 }
