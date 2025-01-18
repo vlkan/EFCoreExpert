@@ -11,6 +11,7 @@
     <Folder Include="Infra\DataGenerators\" />
     <Folder Include="Infra\Interceptors\" />
     <Folder Include="Infra\Repositories\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>

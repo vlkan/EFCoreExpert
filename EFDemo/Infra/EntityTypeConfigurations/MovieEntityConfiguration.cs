@@ -15,7 +15,7 @@ public class MovieEntityConfiguration : BaseEntityTypeConfiguration<Movie>
         //One-To-Many - Director
         builder.HasOne(m => m.Director).WithMany(d => d.Movies).HasForeignKey(m => m.DirectorId);
         //One-To-Many - Genre
-        builder.HasOne(m => m.Genre).WithMany(d => d.Movies).HasForeignKey(m => m.DirectorId);
+        builder.HasOne(m => m.Genre).WithMany(d => d.Movies).HasForeignKey(m => m.GenreId);
         //Many-To-Many - Actor
         builder.HasMany(m => m.Actors).WithMany(a => a.Movies).UsingEntity(j => j.ToTable("MovieActors"));
 

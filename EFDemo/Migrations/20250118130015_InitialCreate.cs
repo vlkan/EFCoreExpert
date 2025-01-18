@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EFDemo.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -85,8 +85,8 @@ namespace EFDemo.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Movies_Genres_DirectorId",
-                        column: x => x.DirectorId,
+                        name: "FK_Movies_Genres_GenreId",
+                        column: x => x.GenreId,
                         principalSchema: "ef",
                         principalTable: "Genres",
                         principalColumn: "Id",
@@ -131,6 +131,12 @@ namespace EFDemo.Migrations
                 schema: "ef",
                 table: "Movies",
                 column: "DirectorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Movies_GenreId",
+                schema: "ef",
+                table: "Movies",
+                column: "GenreId");
         }
 
         /// <inheritdoc />

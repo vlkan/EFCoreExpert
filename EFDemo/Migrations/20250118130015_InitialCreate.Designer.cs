@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFDemo.Migrations
 {
     [DbContext(typeof(MovieDbContext))]
-    [Migration("20250116113312_initial")]
-    partial class initial
+    [Migration("20250118130015_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -150,6 +150,8 @@ namespace EFDemo.Migrations
 
                     b.HasIndex("DirectorId");
 
+                    b.HasIndex("GenreId");
+
                     b.ToTable("Movies", "ef");
                 });
 
@@ -178,7 +180,7 @@ namespace EFDemo.Migrations
 
                     b.HasOne("EFDemo.Infra.Entities.Genre", "Genre")
                         .WithMany("Movies")
-                        .HasForeignKey("DirectorId")
+                        .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

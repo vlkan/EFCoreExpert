@@ -147,6 +147,8 @@ namespace EFDemo.Migrations
 
                     b.HasIndex("DirectorId");
 
+                    b.HasIndex("GenreId");
+
                     b.ToTable("Movies", "ef");
                 });
 
@@ -175,7 +177,7 @@ namespace EFDemo.Migrations
 
                     b.HasOne("EFDemo.Infra.Entities.Genre", "Genre")
                         .WithMany("Movies")
-                        .HasForeignKey("DirectorId")
+                        .HasForeignKey("GenreId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
