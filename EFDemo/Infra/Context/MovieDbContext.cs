@@ -59,7 +59,7 @@ public class DbContextFactory : IDesignTimeDbContextFactory<MovieDbContext>
         {
             options.MigrationsHistoryTable("__EfMigrationHistory", schema: "ef");
             options.CommandTimeout(5_000);
-            options.EnableRetryOnFailure(maxRetryCount: 5);
+            //options.EnableRetryOnFailure(maxRetryCount: 5);
         });
 
         return new MovieDbContext(optionBuilder.Options);
