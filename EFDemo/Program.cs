@@ -22,7 +22,7 @@ optionBuilder.UseSqlServer(connStr, options =>
     //options.EnableRetryOnFailure(maxRetryCount: 5);
 });
 
-optionBuilder.LogTo(m => Log(m));
+optionBuilder.LogTo(m => Log(m)).EnableSensitiveDataLogging();
 var dbContext = new MovieDbContext(optionBuilder.Options);
 
 var actorCount = await dbContext.Actors.Take(5).OrderBy(n => n.FirstName).CountAsync();
