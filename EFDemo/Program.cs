@@ -25,9 +25,11 @@ optionBuilder.UseSqlServer(connStr, options =>
 });
 
 optionBuilder.
-    LogTo(m => Log(m), new[] { CoreEventId.ContextDisposed, CoreEventId.ContextInitialized }, LogLevel.Information).
-    EnableDetailedErrors().
-    EnableSensitiveDataLogging(); // Log yazılırken hassas verilerin görünmesi için.
+    LogTo(m => Log(m), (eventId, logLevel) => logLevel >= LogLevel.Information
+                                   || eventId == RelationalEventId.ConnectionOpened
+                                   || eventId == RelationalEventId.ConnectionClosed)
+    .EnableDetailedErrors()
+    .EnableSensitiveDataLogging(); // Log yazılırken hassas verilerin görünmesi için.
 var dbContext = new MovieDbContext(optionBuilder.Options);
 
 var actorCount = await dbContext.Actors.Take(5).OrderBy(n => n.FirstName).CountAsync();
