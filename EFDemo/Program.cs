@@ -1,6 +1,8 @@
 ﻿using EFDemo.Infra.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 var connStr = configuration.GetConnectionString("SqlServer");
@@ -22,7 +24,10 @@ optionBuilder.UseSqlServer(connStr, options =>
     //options.EnableRetryOnFailure(maxRetryCount: 5);
 });
 
-optionBuilder.LogTo(m => Log(m)).EnableSensitiveDataLogging();
+optionBuilder.
+    LogTo(m => Log(m), new[] { CoreEventId.ContextDisposed, CoreEventId.ContextInitialized }, LogLevel.Information).
+    EnableDetailedErrors().
+    EnableSensitiveDataLogging(); // Log yazılırken hassas verilerin görünmesi için.
 var dbContext = new MovieDbContext(optionBuilder.Options);
 
 var actorCount = await dbContext.Actors.Take(5).OrderBy(n => n.FirstName).CountAsync();
