@@ -1,4 +1,5 @@
 ﻿using EFDemo.Infra.Context;
+using EFDemo.Infra.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -30,10 +31,80 @@ optionBuilder.
                                    || eventId == RelationalEventId.ConnectionClosed)
     .EnableDetailedErrors()
     .EnableSensitiveDataLogging(); // Log yazılırken hassas verilerin görünmesi için.
+
 var dbContext = new MovieDbContext(optionBuilder.Options);
 
-var actorCount = await dbContext.Actors.Take(5).OrderBy(n => n.FirstName).CountAsync();
+//var actorCount = await dbContext.Actors.Take(5).OrderBy(n => n.FirstName).CountAsync();
 
-Console.WriteLine("Total actors count: {0}", actorCount);
+//Console.WriteLine("Total actors count: {0}", actorCount);
+
+async Task GetActors()
+{
+
+    IQueryable<Actor> query = dbContext.Actors.Where(a => a.FirstName.Contains("A"));
+
+    IQueryable<Actor> queryFunc = dbContext.Actors.Where(a => EF.Functions.Contains(nameof(Actor.FirstName), "%A%"));
+
+    //Deferred Execution
+
+    int actorsCount = query.Count();
+
+    List<Actor> actors = query.ToList();
+
+    List<Guid> ids = query.Select(i => i.Id).ToList(); // select Id from Actors
+
+    var data = query.Select(d => new { d.Id, d.CreatedAt });
+
+    List<ActorViewModel> viewData = query.Select(v => new ActorViewModel()
+    {
+        Id = v.Id,
+        FullName = v.FirstName + " " + v.LastName,
+    }).ToList();
+
+    foreach (var item in actors)
+    {
+        Console.WriteLine("Actor: {0} {1}", item.FirstName, item.LastName);
+    }
+}
+
+async Task GetMovieWithCount()
+{
+    int count = dbContext.Movies.Select(m => m.ViewCount).Count();
+}
+
+async Task GroupByExample()
+{
+    var resCount = from m in dbContext.Movies
+                   group m by m.GenreId
+                   into r
+                   select new { Count = r.Count(), GenreId = r.Key };
+
+    foreach (var item in resCount)
+    {
+        Console.WriteLine(item.Count + " " + item.GenreId);
+    }
+
+    var resAvg = dbContext.Movies.GroupBy(m => m.GenreId, m => m.ViewCount, (genreId, viewCounts) => new
+    {
+        GenreId = genreId,
+        AvgViews = viewCounts.Average()
+    });
+
+    foreach (var item in resAvg)
+    {
+        Console.WriteLine(item.GenreId + " " + item.AvgViews);
+    }
+}
+
+await GetActors();
+
+await GroupByExample();
 
 Console.ReadLine();
+
+class ActorViewModel
+{
+    public Guid Id { get; set; }
+    public string FullName { get; set; }
+}
+
