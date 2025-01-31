@@ -113,11 +113,29 @@ async Task PrintMovieNamesWithGenreNames()
 
 }
 
+void PrintMovieNamesWithPhotoUrl()
+{
+    var movie = dbContext.Movies.FirstOrDefault();
+
+    dbContext.Entry(movie)
+        .Reference(m => m.Photos)
+        .Query()
+        .Where(i => i.Any(p => p.Url.StartsWith("https")))
+        .Load();
+
+    foreach (var item in movie.Photos)
+    {
+        Console.WriteLine(item.Url);
+    }
+}
+
 await GetActors();
 
 await GroupByExample();
 
 await PrintMovieNamesWithGenreNames();
+
+void PrintMovieNamesWithPhotoUrl();
 
 Console.ReadLine();
 
