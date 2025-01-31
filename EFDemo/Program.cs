@@ -96,9 +96,28 @@ async Task GroupByExample()
     }
 }
 
+async Task PrintMovieNamesWithGenreNames()
+{
+    var sqlQuery = dbContext.Movies.Include(m => m.Genre).ToQueryString();
+    var allMovies = await dbContext
+        .Movies.Include(m => m.Genre)
+        .Select(m => new { MovieName = m.Name, GenreName = m.Genre.Name })
+        .ToListAsync();
+
+    var filteredQuery = dbContext.Movies
+        .Include(g => g.Genre)
+        .Include(a => a.Actors.Where(a => a.FirstName.Contains("A")))
+        .Where(m => m.Genre.Name == "Comedy")
+        .Select(m => new { MovieName = m.Name, GenreName = m.Genre.Name, Actors = m.Actors.Where(b => b.FirstName.Contains("A")) })
+        .ToQueryString();
+
+}
+
 await GetActors();
 
 await GroupByExample();
+
+await PrintMovieNamesWithGenreNames();
 
 Console.ReadLine();
 
