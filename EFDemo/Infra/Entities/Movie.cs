@@ -19,4 +19,5 @@ public class Movie : BaseEntity
     public virtual Director Director { get; set; }
 
     public virtual ICollection<Actor> Actors { get; set; }
+    public virtual ICollection<MoviePhoto> Photos { get; set; }
 }

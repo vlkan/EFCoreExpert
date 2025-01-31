@@ -13,6 +13,7 @@ public class MovieDbContext : DbContext
     public DbSet<Director> Directors { get; set; }
     public DbSet<Genre> Genres { get; set; }
     public DbSet<Actor> Actors { get; set; }
+    public DbSet<MoviePhoto> MoviePhoto { get; set; }
 
     public MovieDbContext(DbContextOptions options) : base(options)
     {

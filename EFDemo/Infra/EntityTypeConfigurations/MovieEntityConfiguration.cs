@@ -18,6 +18,11 @@ public class MovieEntityConfiguration : BaseEntityTypeConfiguration<Movie>
         builder.HasOne(m => m.Genre).WithMany(d => d.Movies).HasForeignKey(m => m.GenreId);
         //Many-To-Many - Actor
         builder.HasMany(m => m.Actors).WithMany(a => a.Movies).UsingEntity(j => j.ToTable("MovieActors"));
+        //One-to-Many => MoviePhotos
+        builder.HasMany(m => m.Photos)
+            .WithOne(d => d.Movie)
+            .HasForeignKey(m => m.MovieId)
+            .IsRequired(false);
 
 
         base.Configure(builder);
