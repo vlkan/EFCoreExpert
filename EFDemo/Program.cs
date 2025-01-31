@@ -135,7 +135,7 @@ await GroupByExample();
 
 await PrintMovieNamesWithGenreNames();
 
-void PrintMovieNamesWithPhotoUrl();
+PrintMovieNamesWithPhotoUrl();
 
 Console.ReadLine();
 
