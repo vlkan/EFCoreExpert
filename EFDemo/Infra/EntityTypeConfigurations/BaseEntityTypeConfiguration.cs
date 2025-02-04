@@ -1,11 +1,8 @@
 ﻿using EFDemo.Infra.Entities.Base;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace EFDemo.Infra.EntityTypeConfigurations;
 
@@ -14,6 +11,9 @@ public class BaseEntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEn
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
         builder.HasKey(e => e.Id);
+
+        builder.Property(i => i.CreatedAt).ValueGeneratedOnAdd().HasValueGenerator<CreatedDateValueGenerator>();
+        //builder.Property(i => i.ModifiedAt).ValueGeneratedOnUpdate().HasValueGenerator<CreatedDateValueGenerator>();
 
         builder.Property(e => e.CreatedAt)
             //.HasDefaultValue(DateTime.Now)
@@ -24,5 +24,15 @@ public class BaseEntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEn
             .HasColumnType("datetime2")
             .IsRequired(false);
 
+    }
+}
+
+public class CreatedDateValueGenerator : ValueGenerator<DateTime>
+{
+    public override bool GeneratesTemporaryValues => throw new NotImplementedException();
+
+    public override DateTime Next(EntityEntry entry)
+    {
+        return DateTime.Now;
     }
 }
