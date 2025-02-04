@@ -141,15 +141,82 @@ void PrintMovieNamesWithPhotoUrlWithLazyLoading()
     }
 }
 
-await GetActors();
+void AddTestGenre()
+{
+    var genre = new Genre()
+    {
+        Id = Guid.NewGuid(),
+        Name = "Drama",
+        CreatedAt = DateTime.Now,
+    };
 
-await GroupByExample();
+    dbContext.Genres.Add(genre);
+    dbContext.SaveChanges();
+}
 
-await PrintMovieNamesWithGenreNames();
+void AddTestMovie()
+{
+    var movie = new Movie()
+    {
+        Id = Guid.NewGuid(),
+        Name = "New Movie 1",
+        CreatedAt = DateTime.Now,
+        ViewCount = 1,
+        GenreId = Guid.Parse("727725DF-D7F7-451F-BA29-3DB3CB165BBF"),
+        Director = new Director()
+        {
+            Id = Guid.NewGuid(),
+            FirstName = "Zeki",
+            LastName = "Demirkubuz",
+            CreatedAt = DateTime.Now,
+        }
+    };
 
-PrintMovieNamesWithPhotoUrl();
+    //dbContext.Movies.Add(movie);
+    dbContext.Add(movie);
+    dbContext.SaveChanges();
 
-PrintMovieNamesWithPhotoUrlWithLazyLoading();
+    Console.WriteLine("Movie Added");
+
+    /* 
+     EFCORE_MESSAGE: warn: 4.02.2025 09:48:09.267 CoreEventId.SensitiveDataLoggingEnabledWarning[10400] (Microsoft.EntityFrameworkCore.Infrastructure)
+      Sensitive data logging is enabled. Log entries and exception messages may include sensitive application data; this mode should only be enabled during development.
+EFCORE_MESSAGE: dbug: 4.02.2025 09:48:10.001 RelationalEventId.ConnectionOpened[20001] (Microsoft.EntityFrameworkCore.Database.Connection)
+      Opened connection to database 'EFDemo' on server '(localdb)\MSSQLLocalDB'.
+EFCORE_MESSAGE: info: 4.02.2025 09:48:10.070 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+      Executed DbCommand (35ms) [Parameters=[@p0='db512e27-d0f1-4d55-802b-906928a7e3ab', @p1='2025-02-04T09:48:08.3798115+03:00', @p2=NULL (DbType = DateTime2), @p3='Drama' (Nullable = false) (Size = 100)], CommandType='Text', CommandTimeout='5000']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      INSERT INTO [ef].[Genres] ([Id], [CreatedAt], [ModifiedAt], [Name])
+      VALUES (@p0, @p1, @p2, @p3);
+EFCORE_MESSAGE: dbug: 4.02.2025 09:48:10.086 RelationalEventId.ConnectionClosed[20003] (Microsoft.EntityFrameworkCore.Database.Connection)
+      Closed connection to database 'EFDemo' on server '(localdb)\MSSQLLocalDB' (4ms).
+EFCORE_MESSAGE: dbug: 4.02.2025 09:48:10.171 RelationalEventId.ConnectionOpened[20001] (Microsoft.EntityFrameworkCore.Database.Connection)
+      Opened connection to database 'EFDemo' on server '(localdb)\MSSQLLocalDB'.
+EFCORE_MESSAGE: info: 4.02.2025 09:48:10.185 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+      Executed DbCommand (4ms) [Parameters=[@p0='f2390300-d166-4e1a-a026-7eed3edaccb3', @p1='2025-02-04T09:48:10.0909978+03:00', @p2='Zeki' (Nullable = false) (Size = 100), @p3='Demirkubuz' (Nullable = false) (Size = 100), @p4=NULL (DbType = DateTime2), @p5='6f733107-28ff-448d-a87f-4c961255371c', @p6='2025-02-04T09:48:10.0907506+03:00', @p7='f2390300-d166-4e1a-a026-7eed3edaccb3', @p8='727725df-d7f7-451f-ba29-3db3cb165bbf', @p9=NULL (DbType = DateTime2), @p10='New Movie 1' (Nullable = false) (Size = 200), @p11='1'], CommandType='Text', CommandTimeout='5000']
+      SET NOCOUNT ON;
+      INSERT INTO [ef].[Directors] ([Id], [CreatedAt], [FirstName], [LastName], [ModifiedAt])
+      VALUES (@p0, @p1, @p2, @p3, @p4);
+      INSERT INTO [ef].[Movies] ([Id], [CreatedAt], [DirectorId], [GenreId], [ModifiedAt], [Name], [ViewCount])
+      VALUES (@p5, @p6, @p7, @p8, @p9, @p10, @p11);
+EFCORE_MESSAGE: dbug: 4.02.2025 09:48:10.193 RelationalEventId.ConnectionClosed[20003] (Microsoft.EntityFrameworkCore.Database.Connection)
+      Closed connection to database 'EFDemo' on server '(localdb)\MSSQLLocalDB' (0ms).
+     */
+}
+
+//await GetActors();
+
+//await GroupByExample();
+
+//await PrintMovieNamesWithGenreNames();
+
+//PrintMovieNamesWithPhotoUrl();
+
+//PrintMovieNamesWithPhotoUrlWithLazyLoading();
+
+//AddTestGenre();
+AddTestMovie();
 
 
 Console.ReadLine();
