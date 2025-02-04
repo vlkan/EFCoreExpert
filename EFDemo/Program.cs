@@ -25,6 +25,8 @@ optionBuilder.UseSqlServer(connStr, options =>
     //options.EnableRetryOnFailure(maxRetryCount: 5);
 });
 
+optionBuilder.UseLazyLoadingProxies(builder => builder.IgnoreNonVirtualNavigations(true));
+
 optionBuilder.
     LogTo(m => Log(m), (eventId, logLevel) => logLevel >= LogLevel.Information
                                    || eventId == RelationalEventId.ConnectionOpened
@@ -129,6 +131,16 @@ void PrintMovieNamesWithPhotoUrl()
     }
 }
 
+void PrintMovieNamesWithPhotoUrlWithLazyLoading()
+{
+    var movie = dbContext.Movies.FirstOrDefault();
+
+    foreach (var item in movie.Photos)
+    {
+        Console.WriteLine(item.Url);
+    }
+}
+
 await GetActors();
 
 await GroupByExample();
@@ -136,6 +148,9 @@ await GroupByExample();
 await PrintMovieNamesWithGenreNames();
 
 PrintMovieNamesWithPhotoUrl();
+
+PrintMovieNamesWithPhotoUrlWithLazyLoading();
+
 
 Console.ReadLine();
 
