@@ -256,6 +256,25 @@ EFCORE_MESSAGE: dbug: 4.02.2025 15:07:32.487 RelationalEventId.ConnectionClosed[
     #endregion
 }
 
+void DeleteTestGenre()
+{
+    #region Before EF7
+    //var genre = dbContext.Genres.First(g => g.Name == "Drama3");
+
+    ////dbContext.Genres.Remove(genre);
+    //dbContext.Remove(genre);
+
+    //dbContext.SaveChanges();
+    #endregion
+
+    #region After EF7
+
+    dbContext.Genres.Where(g => g.Name == "Drama3").ExecuteDelete();
+
+    #endregion
+
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -270,7 +289,9 @@ EFCORE_MESSAGE: dbug: 4.02.2025 15:07:32.487 RelationalEventId.ConnectionClosed[
 
 //AddTestMovie();
 
-UpdateTestGenre();
+//UpdateTestGenre();
+
+DeleteTestGenre();
 
 
 
