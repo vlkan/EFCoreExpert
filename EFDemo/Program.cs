@@ -205,6 +205,57 @@ EFCORE_MESSAGE: dbug: 4.02.2025 09:48:10.193 RelationalEventId.ConnectionClosed[
      */
 }
 
+void UpdateTestGenre()
+{
+    #region Before EF7
+    //Before EF7
+    //var genre = dbContext.Genres.First(g => g.Name == "Drama");
+    //genre.Name = "Drama1";
+    //genre.ModifiedAt = DateTime.Now;
+
+    ////dbContext.Entry(genre).State = EntityState.Modified;
+    //dbContext.SaveChanges();
+    /* SQL RAW
+     EFCORE_MESSAGE: info: 4.02.2025 14:46:44.146 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+      Executed DbCommand (32ms) [Parameters=[], CommandType='Text', CommandTimeout='5000']
+      SELECT TOP(1) [g].[Id], [g].[CreatedAt], [g].[ModifiedAt], [g].[Name]
+      FROM [ef].[Genres] AS [g]
+      WHERE [g].[Name] = N'Drama'
+EFCORE_MESSAGE: dbug: 4.02.2025 14:46:44.247 RelationalEventId.ConnectionClosed[20003] (Microsoft.EntityFrameworkCore.Database.Connection)
+      Closed connection to database 'EFDemo' on server '(localdb)\MSSQLLocalDB' (6ms).
+EFCORE_MESSAGE: dbug: 4.02.2025 14:46:44.354 RelationalEventId.ConnectionOpened[20001] (Microsoft.EntityFrameworkCore.Database.Connection)
+      Opened connection to database 'EFDemo' on server '(localdb)\MSSQLLocalDB'.
+EFCORE_MESSAGE: info: 4.02.2025 14:46:44.410 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+      Executed DbCommand (42ms) [Parameters=[@p2='727725df-d7f7-451f-ba29-3db3cb165bbf', @p0='2025-02-04T14:46:44.2482781+03:00' (Nullable = true), @p1='Drama1' (Nullable = false) (Size = 100)], CommandType='Text', CommandTimeout='5000']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      UPDATE [ef].[Genres] SET [ModifiedAt] = @p0, [Name] = @p1
+      OUTPUT 1
+      WHERE [Id] = @p2;
+     */
+    #endregion
+
+    #region After EF7
+    //executeUpdate and exewcuteDelete not require savechanges.
+    dbContext.Genres.Where(g => g.Name == "Drama1")
+                    .ExecuteUpdate(u => u.SetProperty(g => g.ModifiedAt, DateTime.Now).SetProperty(g => g.Name, "Drama3"));
+    #region SQL RAW
+    /*
+      EFCORE_MESSAGE: info: 4.02.2025 15:07:32.475 RelationalEventId.CommandExecuted[20101] (Microsoft.EntityFrameworkCore.Database.Command)
+      Executed DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='5000']
+      UPDATE [g]
+      SET [g].[Name] = N'Drama3',
+          [g].[ModifiedAt] = GETDATE()
+      FROM [ef].[Genres] AS [g]
+      WHERE [g].[Name] = N'Drama1'
+EFCORE_MESSAGE: dbug: 4.02.2025 15:07:32.487 RelationalEventId.ConnectionClosed[20003] (Microsoft.EntityFrameworkCore.Database.Connection)
+      Closed connection to database 'EFDemo' on server '(localdb)\MSSQLLocalDB' (4ms).
+     */
+    #endregion
+
+    #endregion
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -216,7 +267,11 @@ EFCORE_MESSAGE: dbug: 4.02.2025 09:48:10.193 RelationalEventId.ConnectionClosed[
 //PrintMovieNamesWithPhotoUrlWithLazyLoading();
 
 //AddTestGenre();
-AddTestMovie();
+
+//AddTestMovie();
+
+UpdateTestGenre();
+
 
 
 Console.ReadLine();
