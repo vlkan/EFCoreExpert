@@ -24,6 +24,9 @@ public class MovieEntityConfiguration : BaseEntityTypeConfiguration<Movie>
             .HasForeignKey(m => m.MovieId)
             .IsRequired(false);
 
+        //Owned Types
+        builder.OwnsOne(p => p.Release);
+
 
         base.Configure(builder);
     }

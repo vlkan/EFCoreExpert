@@ -20,4 +20,6 @@ public class Movie : BaseEntity
 
     public virtual ICollection<Actor> Actors { get; set; }
     public virtual ICollection<MoviePhoto> Photos { get; set; }
+
+    public MovieRelease Release { get; set; }
 }
