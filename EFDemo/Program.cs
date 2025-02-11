@@ -1,5 +1,6 @@
 ﻿using EFDemo.Infra.Context;
 using EFDemo.Infra.Entities;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -331,6 +332,110 @@ void GetMovieWithCinemaDataFromJson()
         SQLServer OPENJSON function filtering inside json (nvarchar(max))
          */
         #endregion
+
+    #endregion
+}
+
+void TopActorsByMovies(int topCount = 10)
+{
+    SqlParameter sqlParam = new SqlParameter("TopCount", topCount);
+    FormattableString rawSql = $"""
+        EXECUTE ef.GetTopActorsByMovies {sqlParam}
+        """;
+
+    var actors = dbContext.Database.SqlQuery<ActorViewModel>(rawSql).ToList();
+}
+
+void RawSqlExamples()
+{
+    #region FromSQL
+
+    //int nameLength = 4;
+    //int nameLengthMax = 15;
+    //var nameLengthSqlParam = new SqlParameter("pLength", 4);
+
+    //// After EF 7 (FormattableString)
+    //var movies = dbContext.Movies
+    //    //.FromSql($"SELECT * FROM ef.Movies Where LEN(NAME) > {nameLength}")
+    //    .FromSql($"SELECT * FROM ef.Movies Where LEN(NAME) > {nameLengthSqlParam}")
+    //    .ToList();
+
+    //// Before EF7 (FormattableString)
+    //movies = dbContext.Movies
+    //   .FromSqlInterpolated($"SELECT * FROM ef.Movies Where LEN(NAME) > {nameLength}")
+    //   .ToList();
+
+
+    //movies = dbContext.Movies
+    //    .FromSqlRaw($"SELECT * FROM ef.Movies Where LEN(NAME) > @p0", nameLength)
+    //    .Where(m => m.Name.Length < nameLengthMax)
+    //    .ToList();
+
+    #endregion
+
+    #region ExecuteSQL
+
+    //string formattableStringV1 = $"""
+    //    UPDATE ef.Genres 
+    //    SET 
+    //        ModifiedDate = GETUTCDATE(), 
+    //        Name = 'Drama1' 
+    //    WHERE 
+    //        Name = 'Drama2'
+    //    """;
+
+    //string nameParameterValue = "Drama2";
+    //FormattableString formattableStringV2 = $"""
+    //    UPDATE ef.Genres 
+    //    SET 
+    //        ModifiedDate = GETUTCDATE(), 
+    //        Name = {nameParameterValue} 
+    //    WHERE 
+    //        Name = 'Drama1'
+    //    """;
+
+    //SqlParameter nameSqlParameter = new("pNameValue", "Drama1");
+    //FormattableString formattableStringV3 = $"""
+    //    UPDATE ef.Genres 
+    //    SET 
+    //        ModifiedDate = GETUTCDATE(), 
+    //        Name = {nameSqlParameter}
+    //    WHERE 
+    //        Name = {nameParameterValue}
+    //    """;
+
+
+    //var rows = dbContext.Database.ExecuteSqlRaw(formattableStringV1);
+
+    //// After EF7
+    //rows = dbContext.Database.ExecuteSql(formattableStringV2);
+
+    //rows = dbContext.Database.ExecuteSqlInterpolated(formattableStringV3);
+
+    #endregion
+
+    #region SqlQuery
+
+    Guid genreId = Guid.Parse("0B4BB3C3-C491-4203-BC4E-AAD55698B280");
+    FormattableString mostViewedMovieByGenreId = $"""
+        SELECT 
+            AVG(ViewCount) 
+        FROM 
+            ef.Movies 
+        Where 
+            GenreId = {genreId}
+        """;
+
+    var mostViewedCounts = dbContext.Database
+        .SqlQuery<int>(mostViewedMovieByGenreId)
+        .ToList();
+
+
+    FormattableString actorSql = $"""
+        SELECT Id, FirstName + ' ' + LastName as FullName, FirstName FROM ef.Actors
+        """;
+
+    var models = dbContext.Database.SqlQuery<ActorViewModel>(actorSql).ToList();
 
     #endregion
 }
