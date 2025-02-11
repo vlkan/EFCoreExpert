@@ -22,4 +22,5 @@ public class Movie : BaseEntity
     public virtual ICollection<MoviePhoto> Photos { get; set; }
 
     public MovieRelease Release { get; set; }
+    public ICollection<ReleaseCinema> ReleaseCinemas { get; set; }
 }

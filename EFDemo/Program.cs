@@ -275,6 +275,17 @@ void DeleteTestGenre()
 
 }
 
+void GetMovieWithCinemaData()
+{
+    //OwnedTypes - Many
+    var movie = dbContext.Movies.First();
+
+    foreach (var item in movie.ReleaseCinemas)
+    {
+        Console.WriteLine("Name: {0}, AddressLine1: {1}", item.Name, item.AddressLine1);
+    }
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -291,9 +302,9 @@ void DeleteTestGenre()
 
 //UpdateTestGenre();
 
-DeleteTestGenre();
+//DeleteTestGenre();
 
-
+//GetMovieWithCinemaData();
 
 Console.ReadLine();
 

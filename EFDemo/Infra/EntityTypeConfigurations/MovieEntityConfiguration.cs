@@ -27,6 +27,14 @@ public class MovieEntityConfiguration : BaseEntityTypeConfiguration<Movie>
         //Owned Types
         builder.OwnsOne(p => p.Release);
 
+        //Ownes Many
+        builder.OwnsMany(p => p.ReleaseCinemas, builder =>
+        {
+            builder.ToTable("MovieReleaseCinemas");
+            builder.Property(p => p.Name).HasMaxLength(200);
+            builder.Property(p => p.AddressLine1).HasMaxLength(200).IsRequired(true);
+            builder.Property(p => p.AddressLine2).HasMaxLength(200).IsRequired(false);
+        });
 
         base.Configure(builder);
     }
