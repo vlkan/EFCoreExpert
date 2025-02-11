@@ -30,7 +30,10 @@ public class MovieEntityConfiguration : BaseEntityTypeConfiguration<Movie>
         //Ownes Many
         builder.OwnsMany(p => p.ReleaseCinemas, builder =>
         {
-            builder.ToTable("MovieReleaseCinemas");
+            //builder.ToTable("MovieReleaseCinemas");
+
+            builder.ToJson("MovieReleaseCinemas");
+
             builder.Property(p => p.Name).HasMaxLength(200);
             builder.Property(p => p.AddressLine1).HasMaxLength(200).IsRequired(true);
             builder.Property(p => p.AddressLine2).HasMaxLength(200).IsRequired(false);

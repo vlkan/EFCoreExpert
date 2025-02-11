@@ -286,6 +286,55 @@ void GetMovieWithCinemaData()
     }
 }
 
+void GetMovieWithCinemaDataFromJson()
+{
+    var movie = dbContext.Movies.First();
+
+    //Collection Initializer C# 13
+    movie.ReleaseCinemas = []; // new List<ReleaseCinema>();
+
+    movie.ReleaseCinemas.Add(new ReleaseCinema
+    {
+        Name = "Ankamall AVM Cinema",
+        AddressLine1 = "Ankara/Yenimahalle"
+    });
+
+    movie.ReleaseCinemas.Add(new ReleaseCinema
+    {
+        Name = "Atakule Cinema",
+        AddressLine1 = "Ankara/Çankaya"
+    });
+
+    dbContext.SaveChanges();
+
+    #region Json Data
+    /*
+     [{"AddressLine1":"Ankara/Yenimahalle","AddressLine2":null,"Name":"Ankamall AVM Cinema"},{"AddressLine1":"Ankara/\u00C7ankaya","AddressLine2":null,"Name":"Atakule Cinema"}]
+     */
+    #endregion
+
+    #region Get and Querying Json Data
+    var movies = dbContext.Movies.First(m => m.ReleaseCinemas.Any(rc => rc.Name == "Ankamall AVM Cinema"));
+
+    #region SQL Query
+        /*
+          SELECT TOP(1) [m].[Id], [m].[CreatedAt], [m].[DirectorId], [m].[GenreId], [m].[ModifiedAt], [m].[Name], [m].[ViewCount], [m].[Release_Amount], [m].[Release_Date], [m].[MovieReleaseCinemas]
+          FROM [ef].[Movies] AS [m]
+          WHERE EXISTS (
+              SELECT 1
+              FROM OPENJSON([m].[MovieReleaseCinemas], '$') WITH (
+                  [AddressLine1] nvarchar(200) '$.AddressLine1',
+                  [Name] nvarchar(200) '$.Name'
+              ) AS [m0]
+              WHERE [m0].[Name] = N'Ankamall AVM Cinema')
+
+        SQLServer OPENJSON function filtering inside json (nvarchar(max))
+         */
+        #endregion
+
+    #endregion
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -305,6 +354,8 @@ void GetMovieWithCinemaData()
 //DeleteTestGenre();
 
 //GetMovieWithCinemaData();
+
+GetMovieWithCinemaDataFromJson();
 
 Console.ReadLine();
 
