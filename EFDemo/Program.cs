@@ -460,7 +460,7 @@ void RawSqlExamples()
 
 //GetMovieWithCinemaData();
 
-GetMovieWithCinemaDataFromJson();
+//GetMovieWithCinemaDataFromJson();
 
 Console.ReadLine();
 
