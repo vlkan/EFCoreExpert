@@ -39,6 +39,9 @@ public class MovieEntityConfiguration : BaseEntityTypeConfiguration<Movie>
             builder.Property(p => p.AddressLine2).HasMaxLength(200).IsRequired(false);
         });
 
+        //RowVersion Concurrency Timespand Computed
+        builder.Property(m => m.Version).IsRowVersion().IsConcurrencyToken(true);
+
         base.Configure(builder);
     }
 }

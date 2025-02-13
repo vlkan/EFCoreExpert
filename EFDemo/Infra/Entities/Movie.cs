@@ -23,4 +23,6 @@ public class Movie : BaseEntity
 
     public MovieRelease Release { get; set; }
     public ICollection<ReleaseCinema> ReleaseCinemas { get; set; }
+
+    public byte[] Version { get; set; }
 }
