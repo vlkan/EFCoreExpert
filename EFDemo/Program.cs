@@ -2,9 +2,11 @@
 using EFDemo.Infra.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Data;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 var connStr = configuration.GetConnectionString("SqlServer");
@@ -318,20 +320,20 @@ void GetMovieWithCinemaDataFromJson()
     var movies = dbContext.Movies.First(m => m.ReleaseCinemas.Any(rc => rc.Name == "Ankamall AVM Cinema"));
 
     #region SQL Query
-        /*
-          SELECT TOP(1) [m].[Id], [m].[CreatedAt], [m].[DirectorId], [m].[GenreId], [m].[ModifiedAt], [m].[Name], [m].[ViewCount], [m].[Release_Amount], [m].[Release_Date], [m].[MovieReleaseCinemas]
-          FROM [ef].[Movies] AS [m]
-          WHERE EXISTS (
-              SELECT 1
-              FROM OPENJSON([m].[MovieReleaseCinemas], '$') WITH (
-                  [AddressLine1] nvarchar(200) '$.AddressLine1',
-                  [Name] nvarchar(200) '$.Name'
-              ) AS [m0]
-              WHERE [m0].[Name] = N'Ankamall AVM Cinema')
+    /*
+      SELECT TOP(1) [m].[Id], [m].[CreatedAt], [m].[DirectorId], [m].[GenreId], [m].[ModifiedAt], [m].[Name], [m].[ViewCount], [m].[Release_Amount], [m].[Release_Date], [m].[MovieReleaseCinemas]
+      FROM [ef].[Movies] AS [m]
+      WHERE EXISTS (
+          SELECT 1
+          FROM OPENJSON([m].[MovieReleaseCinemas], '$') WITH (
+              [AddressLine1] nvarchar(200) '$.AddressLine1',
+              [Name] nvarchar(200) '$.Name'
+          ) AS [m0]
+          WHERE [m0].[Name] = N'Ankamall AVM Cinema')
 
-        SQLServer OPENJSON function filtering inside json (nvarchar(max))
-         */
-        #endregion
+    SQLServer OPENJSON function filtering inside json (nvarchar(max))
+     */
+    #endregion
 
     #endregion
 }
@@ -440,6 +442,54 @@ void RawSqlExamples()
     #endregion
 }
 
+async Task ConcurrencyTest()
+{
+
+    //for (int i = 0; i < 10; i++)
+    //{
+    //    var dbContext = new MovieDbContext(optionBuilder.Options);
+    //    var movie = dbContext.Movies.Find(Guid.Parse("6840497F-F7D1-4FC3-A010-77CE0A636BCF"));
+    //    if (movie is not null) movie.ViewCount++;
+    //    dbContext.SaveChanges();
+    //}
+
+    Parallel.For(0, 10, async i =>
+    {
+        try
+        {
+            var dbContext = new MovieDbContext(optionBuilder.Options);
+            var movie = dbContext.Movies.Find(Guid.Parse("6840497F-F7D1-4FC3-A010-77CE0A636BCF"));
+
+            if (movie is not null) movie.ViewCount++;
+            dbContext.SaveChanges();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            foreach (EntityEntry entry in ex.Entries)
+            {
+                if (entry.Entity is not Movie) throw new NotSupportedException("Wrong Entity!!!");
+
+                var proposedValues = entry.CurrentValues;
+                var dbValues = entry.GetDatabaseValues();
+
+                foreach (var value in proposedValues.Properties) 
+                {
+                    var proposedValue = proposedValues[value];
+                    var dbValue = dbValues[value];
+
+                    //TODO
+                    dbValues[value] = 0;
+                    entry.OriginalValues.SetValues(dbValues);
+
+                    //Alternative Approach is using timespan row versioning
+                }
+            }
+        }
+    });
+
+
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -461,6 +511,8 @@ void RawSqlExamples()
 //GetMovieWithCinemaData();
 
 //GetMovieWithCinemaDataFromJson();
+
+await ConcurrencyTest();
 
 Console.ReadLine();
 
