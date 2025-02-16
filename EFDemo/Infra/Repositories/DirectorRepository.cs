@@ -10,6 +10,9 @@ public class DirectorRepository(MovieDbContext movieDbContext)
     {
         if (await IsDirectorExist(director))
             throw new Exception("Already Exist!");
+
+        movieDbContext.Add(director);
+        await movieDbContext.SaveChangesAsync();
     }
 
     public Task<bool> IsDirectorExist(Director director) => movieDbContext.Directors.AnyAsync(d => d.FirstName.Equals(director.FirstName));

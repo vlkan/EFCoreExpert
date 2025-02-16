@@ -512,20 +512,50 @@ async Task TransactionExecution()
     };
 
     #region Normal Transaction
-    using var transacton = await dbContext.Database.BeginTransactionAsync();
+    //using var transacton = await dbContext.Database.BeginTransactionAsync();
 
-    try
-    {
-        await dirRepo.AddDirector(director);
-        await movieRepo.AddMovie(movie);
+    //try
+    //{
+    //    await dirRepo.AddDirector(director);
+    //    await movieRepo.AddMovie(movie);
 
-        await transacton.CommitAsync();
-    }
-    catch (Exception ex)
+    //    await transacton.CommitAsync();
+    //}
+    //catch (Exception ex)
+    //{
+    //    await transacton.RollbackAsync();
+    //    throw;
+    //}
+    #endregion
+
+    #region Transaction with Main DbContext Config Strategy
+
+    /*
+         options.CommandTimeout(5_000);
+         options.EnableRetryOnFailure(maxRetryCount: 5);
+
+         SYNC with these settings
+     */
+
+    var strategy = dbContext.Database.CreateExecutionStrategy();
+
+    await strategy.ExecuteAsync(async () =>
     {
-        await transacton.RollbackAsync();
-        throw;
-    }
+        using var transaction = await dbContext.Database.BeginTransactionAsync();
+        
+        try
+        {
+            await dirRepo.AddDirector(director);
+            await movieRepo.AddMovie(movie);
+
+            await transaction.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    });
     #endregion
 }
 
