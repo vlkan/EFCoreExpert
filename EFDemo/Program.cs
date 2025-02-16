@@ -1,5 +1,6 @@
 ﻿using EFDemo.Infra.Context;
 using EFDemo.Infra.Entities;
+using EFDemo.Infra.Repositories;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -472,7 +473,7 @@ async Task ConcurrencyTest()
                 var proposedValues = entry.CurrentValues;
                 var dbValues = entry.GetDatabaseValues();
 
-                foreach (var value in proposedValues.Properties) 
+                foreach (var value in proposedValues.Properties)
                 {
                     var proposedValue = proposedValues[value];
                     var dbValue = dbValues[value];
@@ -488,6 +489,44 @@ async Task ConcurrencyTest()
     });
 
 
+}
+
+async Task TransactionExecution()
+{
+    var dirRepo = new DirectorRepository(dbContext);
+    var movieRepo = new MovieRepository(dbContext);
+
+    var director = new Director()
+    {
+        Id = Guid.NewGuid(),
+        FirstName = "Volkan",
+        LastName = "Önder",
+        CreatedAt = DateTime.Now,
+    };
+
+    var movie = new Movie()
+    {
+        GenreId = Guid.Parse("6840497F-F7D1-4FC3-A010-77CE0A636BCD"),
+        DirectorId = director.Id,
+        Name = "The SC Movie"
+    };
+
+    #region Normal Transaction
+    using var transacton = await dbContext.Database.BeginTransactionAsync();
+
+    try
+    {
+        await dirRepo.AddDirector(director);
+        await movieRepo.AddMovie(movie);
+
+        await transacton.CommitAsync();
+    }
+    catch (Exception ex)
+    {
+        await transacton.RollbackAsync();
+        throw;
+    }
+    #endregion
 }
 
 //await GetActors();
@@ -512,7 +551,9 @@ async Task ConcurrencyTest()
 
 //GetMovieWithCinemaDataFromJson();
 
-await ConcurrencyTest();
+//await ConcurrencyTest();
+
+await TransactionExecution();
 
 Console.ReadLine();
 
