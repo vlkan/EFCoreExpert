@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Infra\DataGenerators\" />
-    <Folder Include="Infra\Interceptors\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

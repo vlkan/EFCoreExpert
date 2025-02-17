@@ -1,5 +1,6 @@
 ﻿using EFDemo.Infra.Context;
 using EFDemo.Infra.Entities;
+using EFDemo.Infra.Interceptors;
 using EFDemo.Infra.Repositories;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,8 @@ optionBuilder.
                                    || eventId == RelationalEventId.ConnectionClosed)
     .EnableDetailedErrors()
     .EnableSensitiveDataLogging(); // Log yazılırken hassas verilerin görünmesi için.
+
+optionBuilder.AddInterceptors(new AuditLogInterceptor());
 
 var dbContext = new MovieDbContext(optionBuilder.Options);
 
@@ -517,6 +520,7 @@ async Task TransactionExecution()
     //try
     //{
     //    await dirRepo.AddDirector(director);
+    //     transaction.CreateSavepoint("director_saved");
     //    await movieRepo.AddMovie(movie);
 
     //    await transacton.CommitAsync();
@@ -524,6 +528,7 @@ async Task TransactionExecution()
     //catch (Exception ex)
     //{
     //    await transacton.RollbackAsync();
+    //    transaction.RollbackToSavepoint("director_saved");
     //    throw;
     //}
     #endregion
@@ -557,6 +562,28 @@ async Task TransactionExecution()
         }
     });
     #endregion
+}
+
+async Task InterceptorTests()
+{
+    dbContext.Genres.Add(new Genre()
+    {
+        CreatedAt = DateTime.Now,
+        Name = "Interceptor_Test_Genre"
+    });
+
+    var movieToUpdate = dbContext.Movies.First(i => i.ViewCount > 1);
+    movieToUpdate.ViewCount = 100;
+
+    //var movieToDelete = dbContext.Movies.First(i => i.Release.Amount < 4);
+    //dbContext.Remove(movieToDelete);
+
+    await dbContext.SaveChangesAsync();
+
+    //dbContext.Movies.Where(i => i.ViewCount > 100)
+    //    .ExecuteUpdate(i => i.SetProperty(p => p.ViewCount, 100));
+
+    //dbContext.Movies.Where(i => i.Release.Amount < 4).ExecuteDelete();
 }
 
 //await GetActors();
