@@ -1,5 +1,6 @@
 ﻿using EFDemo.Infra.Context;
 using EFDemo.Infra.Entities;
+using EFDemo.Infra.Entities.Discriminator;
 using EFDemo.Infra.Interceptors;
 using EFDemo.Infra.Repositories;
 using Microsoft.Data.SqlClient;
@@ -590,7 +591,19 @@ async Task InterceptorTests()
 
 void DiscriminatorTest()
 {
+    dbContext.TvShows.Add(new TvShow()
+    {
+        ReferenceVideoId = Guid.NewGuid(),
+        SeasonCount = 10,
+        EpisodeCountPerSeason = 5
+    });
 
+    dbContext.Documentaries.Add(new Documentary()
+    {
+        ReferenceVideoId = Guid.NewGuid()
+    });
+
+    dbContext.SaveChanges();
 }
 
 //await GetActors();

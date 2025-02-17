@@ -29,7 +29,7 @@ public class BaseEntityTypeConfiguration<TEntity> : IEntityTypeConfiguration<TEn
 
 public class CreatedDateValueGenerator : ValueGenerator<DateTime>
 {
-    public override bool GeneratesTemporaryValues => throw new NotImplementedException();
+    public override bool GeneratesTemporaryValues => false;
 
     public override DateTime Next(EntityEntry entry)
     {
