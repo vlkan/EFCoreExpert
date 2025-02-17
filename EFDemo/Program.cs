@@ -588,6 +588,11 @@ async Task InterceptorTests()
     //dbContext.Movies.Where(i => i.Release.Amount < 4).ExecuteDelete();
 }
 
+void DiscriminatorTest()
+{
+
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -612,7 +617,7 @@ async Task InterceptorTests()
 
 //await ConcurrencyTest();
 
-await InterceptorTests();
+DiscriminatorTest();
 
 Console.ReadLine();
 

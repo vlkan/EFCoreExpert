@@ -1,4 +1,5 @@
 ﻿using EFDemo.Infra.Entities;
+using EFDemo.Infra.Entities.Discriminator;
 using EFDemo.Infra.EntityTypeConfigurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
@@ -14,6 +15,8 @@ public class MovieDbContext : DbContext
     public DbSet<Actor> Actors { get; set; }
     public DbSet<MoviePhoto> MoviePhoto { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<Documentary> Documentaries { get; set; }
+    public DbSet<TvShow> TvShows { get; set; }
 
     public MovieDbContext(DbContextOptions options) : base(options)
     {
