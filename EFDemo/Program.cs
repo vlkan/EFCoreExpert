@@ -40,6 +40,8 @@ optionBuilder.
     .EnableSensitiveDataLogging(); // Log yazılırken hassas verilerin görünmesi için.
 
 optionBuilder.AddInterceptors(new AuditLogInterceptor());
+optionBuilder.AddInterceptors(new ModifiedByInterceptor());
+
 
 var dbContext = new MovieDbContext(optionBuilder.Options);
 
@@ -610,7 +612,7 @@ async Task InterceptorTests()
 
 //await ConcurrencyTest();
 
-await TransactionExecution();
+await InterceptorTests();
 
 Console.ReadLine();
 
