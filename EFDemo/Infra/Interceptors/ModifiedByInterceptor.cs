@@ -11,7 +11,7 @@ public class ModifiedByInterceptor : SaveChangesInterceptor
     {
         var entries = eventData.Context.ChangeTracker.Entries().ToList();
 
-        var updatedEnrties = entries.Where(e => e.Entity is BaseEntity or PersonBaseEntity)
+        var updatedEnrties = entries.Where(e => e.Entity is BaseEntity)
                              .Where(e => e.State == EntityState.Modified);
 
         foreach (var entry in updatedEnrties)
@@ -19,10 +19,6 @@ public class ModifiedByInterceptor : SaveChangesInterceptor
             if (entry.Entity is BaseEntity baseEntity)
             {
                 baseEntity.ModifiedAt = DateTime.Now;
-            }
-            else if (entry.Entity is PersonBaseEntity personBaseEntity)
-            {
-                personBaseEntity.ModifiedAt = DateTime.Now;
             }
         }
 
