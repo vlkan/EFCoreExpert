@@ -568,14 +568,14 @@ async Task TransactionExecution()
 
 async Task InterceptorTests()
 {
-    dbContext.Genres.Add(new Genre()
-    {
-        CreatedAt = DateTime.Now,
-        Name = "Interceptor_Test_Genre"
-    });
+    //dbContext.Genres.Add(new Genre()
+    //{
+    //    CreatedAt = DateTime.Now,
+    //    Name = "Interceptor_Test_Genre"
+    //});
 
-    var movieToUpdate = dbContext.Movies.First(i => i.ViewCount > 1);
-    movieToUpdate.ViewCount = 100;
+    var movieToUpdate = dbContext.Genres.First(i => i.Id == Guid.Parse("57D499FD-B58D-49B3-744F-08DD4F48B187"));
+    movieToUpdate.Name = "Interceptor_Test_Genre9";
 
     //var movieToDelete = dbContext.Movies.First(i => i.Release.Amount < 4);
     //dbContext.Remove(movieToDelete);
