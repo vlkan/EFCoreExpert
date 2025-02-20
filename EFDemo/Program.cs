@@ -606,6 +606,24 @@ void DiscriminatorTest()
     dbContext.SaveChanges();
 }
 
+void GlobalQueryFilterTest()
+{
+    var movie = dbContext.Movies.ToList();
+
+    /* RAW SQL
+     * SELECT *
+      FROM [ef].[Movies] AS [m]
+      WHERE [m].[ViewCount] > 10
+     */
+
+    var movieAll = dbContext.Movies.IgnoreQueryFilters().ToList();
+
+    /* RAW SQL
+      SELECT *
+      FROM [ef].[Movies] AS [m]
+    */
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -630,7 +648,8 @@ void DiscriminatorTest()
 
 //await ConcurrencyTest();
 
-DiscriminatorTest();
+//DiscriminatorTest();
+GlobalQueryFilterTest();
 
 Console.ReadLine();
 

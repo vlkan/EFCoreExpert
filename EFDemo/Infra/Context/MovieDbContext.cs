@@ -32,6 +32,9 @@ public class MovieDbContext : DbContext
 
         //IEntityTypeConfiguration kullanan configleri otomatik ekle
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MovieEntityConfiguration).Assembly);
+
+        //Global Query Filtering
+        modelBuilder.Entity<Movie>().HasQueryFilter(m => m.ViewCount > 10);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
