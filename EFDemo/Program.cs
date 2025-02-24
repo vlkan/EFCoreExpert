@@ -345,16 +345,6 @@ void GetMovieWithCinemaDataFromJson()
     #endregion
 }
 
-void TopActorsByMovies(int topCount = 10)
-{
-    SqlParameter sqlParam = new SqlParameter("TopCount", topCount);
-    FormattableString rawSql = $"""
-        EXECUTE ef.GetTopActorsByMovies {sqlParam}
-        """;
-
-    var actors = dbContext.Database.SqlQuery<ActorViewModel>(rawSql).ToList();
-}
-
 void RawSqlExamples()
 {
     #region FromSQL
@@ -624,6 +614,40 @@ void GlobalQueryFilterTest()
     */
 }
 
+void TopActorsByMovies(int topCount = 10)
+{
+    /* Raw Stored Procedure
+     CREATE OR ALTER PROCEDURE ef.GetTopActorsByMovies
+	    @TopCount INT
+        AS
+        BEGIN
+	        SET NOCOUNT ON;
+
+	        SELECT TOP (@TopCount)
+	        a.Id,
+	        a.CreatedAt,
+	        a.FirstName,
+	        a.LastName,
+	        A.FirstName + ' ' + a.LastName as FullName,
+	        a.ModifiedAt,
+	        COUNT(ma.MoviesId) as MovieCount
+	        FROM ef.Actors as a
+	        LEFT JOIN ef.MovieActors as ma on a.Id = ma.ActorsId
+	        GROUP BY a.Id, a.CreatedAt, a.FirstName, a.LastName, a.ModifiedAt
+	        ORDER BY MovieCount DESC;
+        END;
+        go
+     */
+    //Stored Procedure
+    SqlParameter sqlParameterErr = new SqlParameter("name", topCount); // Error, because our sql select parameters name is @TopCount
+    SqlParameter sqlParameter = new SqlParameter("TopCount", topCount); // Correct.
+
+    FormattableString rawSQLQuery = $"""
+            EXECUTE ef.GetTopActorsByMovies @TopCount = {topCount}
+        """;
+    var movies = dbContext.Database.SqlQuery<ActorViewModel>(rawSQLQuery).ToList();
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -649,11 +673,14 @@ void GlobalQueryFilterTest()
 //await ConcurrencyTest();
 
 //DiscriminatorTest();
-GlobalQueryFilterTest();
+
+//GlobalQueryFilterTest();
+
+TopActorsByMovies();
 
 Console.ReadLine();
 
-class ActorViewModel
+public class ActorViewModel
 {
     public Guid Id { get; set; }
     public string FullName { get; set; }
