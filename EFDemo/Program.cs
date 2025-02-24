@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Data;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 var connStr = configuration.GetConnectionString("SqlServer");
@@ -714,6 +716,20 @@ void ChangeTrackerTest()
     Console.WriteLine(dbContext.ChangeTracker.DebugView.LongView);
 }
 
+async Task CompiledQueryTest()
+{
+    var mostViewedMovie = await MovieDbContext.C_MostViewedMovie(dbContext);
+
+    Console.WriteLine("Most Viewed Movie is {0}", mostViewedMovie.Name);
+
+    var mostViewedMovies = MovieDbContext.C_MostViewedMovies(dbContext, 3);
+
+    await foreach (var item in mostViewedMovies)
+    {
+        Console.WriteLine("Most Viewed Movie is {0}", item.Name);
+    }
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -748,6 +764,8 @@ void ChangeTrackerTest()
 
 //ViewModelTest();
 
-ChangeTrackerTest();
+//ChangeTrackerTest();
+
+await CompiledQueryTest();
 
 Console.ReadLine();

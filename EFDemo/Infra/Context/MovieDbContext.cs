@@ -70,7 +70,14 @@ public class MovieDbContext : DbContext
         //});
     }
 
+    //Compiled Queries
+    public static readonly Func<MovieDbContext, Task<Movie>> C_MostViewedMovie =
+        EF.CompileAsyncQuery((MovieDbContext dbContext) => dbContext.Movies.OrderByDescending(i => i.ViewCount).First());
+
+    public static readonly Func<MovieDbContext, int, IAsyncEnumerable<Movie>> C_MostViewedMovies =
+    EF.CompileAsyncQuery((MovieDbContext dbContext, int top) => dbContext.Movies.OrderByDescending(i => i.ViewCount).Take(top));
 }
+
 public class DbContextFactory : IDesignTimeDbContextFactory<MovieDbContext>
 {
     public MovieDbContext CreateDbContext(string[] args)
