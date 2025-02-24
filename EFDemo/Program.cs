@@ -653,10 +653,15 @@ void PrintDirectorFullNameByGenre()
     //SQL Functions
     var genreId = Guid.Parse("6840497F-F7D1-4FC3-A010-77CE0A636BCD");
 
-    dbContext.Directors
+    var firstNames = dbContext.Directors
         .Where(d => d.Id == dbContext.GetDirectorIdByGenre(genreId))
         .Select(d => d.FirstName)
         .ToList();
+
+    foreach (var item in firstNames)
+    {
+        Console.WriteLine("Director First Name: {0}", item);
+    }
 
     /* RAW SQL Functions
      * SELECT [d].[FirstName]
