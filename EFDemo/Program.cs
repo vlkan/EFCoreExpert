@@ -43,6 +43,9 @@ optionBuilder.
 optionBuilder.AddInterceptors(new AuditLogInterceptor());
 optionBuilder.AddInterceptors(new ModifiedByInterceptor());
 
+//Default EF behavior is tracking all.
+optionBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
+
 
 var dbContext = new MovieDbContext(optionBuilder.Options);
 
