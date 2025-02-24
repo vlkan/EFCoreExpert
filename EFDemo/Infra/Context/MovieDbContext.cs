@@ -1,6 +1,7 @@
 ﻿using EFDemo.Infra.Entities;
 using EFDemo.Infra.Entities.Discriminator;
 using EFDemo.Infra.EntityTypeConfigurations;
+using EFDemo.Infra.Views;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,7 @@ public class MovieDbContext : DbContext
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<Documentary> Documentaries { get; set; }
     public DbSet<TvShow> TvShows { get; set; }
+    public DbSet<ActorDirectorViewModel> ActorDirectorViewModels { get; set; }
 
     public MovieDbContext(DbContextOptions options) : base(options)
     {
@@ -26,6 +28,7 @@ public class MovieDbContext : DbContext
     {
     }
 
+    //throw not implemented because we dont want call from directly. we want the call from dbcontext.
     public Guid GetDirectorIdByGenre(Guid genreId) => throw new NotImplementedException();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,6 +44,14 @@ public class MovieDbContext : DbContext
         //SQL Functions
         var methodInfo = typeof(MovieDbContext).GetMethod(nameof(GetDirectorIdByGenre), [typeof(Guid)]);
         modelBuilder.HasDbFunction(methodInfo).HasName("GetDirectorIdByGenre");
+
+        //SQL Views
+        modelBuilder.Entity<ActorDirectorViewModel>(v =>
+        {
+            v.HasNoKey();
+            v.ToView("v_ActorsMostWorkedDirector");
+            v.Property(v => v.DirectorCount).HasColumnName("DirectorMovieCount");
+        });
 
     }
 

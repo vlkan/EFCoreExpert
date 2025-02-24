@@ -670,6 +670,28 @@ void PrintDirectorFullNameByGenre()
      */
 }
 
+void ViewModelTest()
+{
+    /* Raw SQL Views
+     * CREATE OR ALTER VIEW ef.v_ActorsMostWorkedDirector as
+        SELECT DISTINCT a.FirstName,
+				        a.LastName,
+				        COUNT(d.Id) over (partition by a.FirstName, a.LastName) as DirectorMovieCount
+        FROM ef.MovieActors ma
+		        inner join ef.Movies m on m.Id = ma.MoviesId
+		        inner join ef.Actors a on a.Id = ma.ActorsId
+		        inner join ef.Directors d on d.Id = m.DirectorId
+        GO
+     */
+
+    var actors = dbContext.ActorDirectorViewModels.ToList();
+
+    foreach (var actor in actors)
+    {
+        Console.WriteLine("Actors Full Name: {0}, Movie Count: {1}", $"{actor.FirstName}, {actor.LastName}", actor.DirectorCount);
+    }
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -700,12 +722,8 @@ void PrintDirectorFullNameByGenre()
 
 //TopActorsByMovies();
 
-PrintDirectorFullNameByGenre();
+//PrintDirectorFullNameByGenre();
+
+ViewModelTest();
+
 Console.ReadLine();
-
-public class ActorViewModel
-{
-    public Guid Id { get; set; }
-    public string FullName { get; set; }
-}
-
