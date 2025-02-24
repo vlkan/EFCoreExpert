@@ -692,6 +692,25 @@ void ViewModelTest()
     }
 }
 
+void ChangeTrackerTest()
+{
+    dbContext.Genres.Add(new Genre()
+    {
+        CreatedAt = DateTime.Now,
+        Name = "GenreTrackerTest"
+    });
+
+    var firstGenre = dbContext.Genres.AsNoTracking().First(g => g.Name == "Genre1");
+    firstGenre.Name = "Genre2";
+
+    //Not work because firstGenre is not tracked.
+    dbContext.Entry(firstGenre).Property(f => f.ModifiedAt).CurrentValue = DateTime.Now;
+    //Not work because firstGenre is not tracked.
+    dbContext.Remove(firstGenre);
+
+    Console.WriteLine(dbContext.ChangeTracker.DebugView.LongView);
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -724,6 +743,8 @@ void ViewModelTest()
 
 //PrintDirectorFullNameByGenre();
 
-ViewModelTest();
+//ViewModelTest();
+
+ChangeTrackerTest();
 
 Console.ReadLine();
