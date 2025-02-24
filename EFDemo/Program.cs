@@ -648,6 +648,23 @@ void TopActorsByMovies(int topCount = 10)
     var movies = dbContext.Database.SqlQuery<ActorViewModel>(rawSQLQuery).ToList();
 }
 
+void PrintDirectorFullNameByGenre()
+{
+    //SQL Functions
+    var genreId = Guid.Parse("6840497F-F7D1-4FC3-A010-77CE0A636BCD");
+
+    dbContext.Directors
+        .Where(d => d.Id == dbContext.GetDirectorIdByGenre(genreId))
+        .Select(d => d.FirstName)
+        .ToList();
+
+    /* RAW SQL Functions
+     * SELECT [d].[FirstName]
+      FROM [ef].[Directors] AS [d]
+      WHERE [d].[Id] = [ef].[GetDirectorIdByGenre](@__genreId_1)
+     */
+}
+
 //await GetActors();
 
 //await GroupByExample();
@@ -676,8 +693,9 @@ void TopActorsByMovies(int topCount = 10)
 
 //GlobalQueryFilterTest();
 
-TopActorsByMovies();
+//TopActorsByMovies();
 
+PrintDirectorFullNameByGenre();
 Console.ReadLine();
 
 public class ActorViewModel

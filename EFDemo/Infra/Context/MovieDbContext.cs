@@ -26,6 +26,8 @@ public class MovieDbContext : DbContext
     {
     }
 
+    public Guid GetDirectorIdByGenre(Guid genreId) => throw new NotImplementedException();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("ef");
@@ -35,6 +37,11 @@ public class MovieDbContext : DbContext
 
         //Global Query Filtering
         modelBuilder.Entity<Movie>().HasQueryFilter(m => m.ViewCount > 10);
+
+        //SQL Functions
+        var methodInfo = typeof(MovieDbContext).GetMethod(nameof(GetDirectorIdByGenre), [typeof(Guid)]);
+        modelBuilder.HasDbFunction(methodInfo).HasName("GetDirectorIdByGenre");
+
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
