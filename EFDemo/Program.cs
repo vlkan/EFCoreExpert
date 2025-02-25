@@ -545,7 +545,7 @@ async Task TransactionExecution()
     await strategy.ExecuteAsync(async () =>
     {
         using var transaction = await dbContext.Database.BeginTransactionAsync();
-        
+
         try
         {
             await dirRepo.AddDirector(director);
@@ -730,42 +730,49 @@ async Task CompiledQueryTest()
     }
 }
 
-//await GetActors();
+void QueryableTest()
+{
+    var filter = new MovieQueryFilter(MinViewCount: 5,
+                                      MaxViewCount: null,
+                                      FromCreatedAt: null,
+                                      Name: null);
 
-//await GroupByExample();
+    //Its still query. Not come from db.
+    IQueryable<Movie> query = dbContext.Movies.AsQueryable();
 
-//await PrintMovieNamesWithGenreNames();
+    if (filter.MinViewCount.HasValue)
+        query = query.Where(i => i.ViewCount >= filter.MinViewCount);
 
-//PrintMovieNamesWithPhotoUrl();
+    if (filter.MaxViewCount.HasValue)
+        query = query.Where(i => i.ViewCount <= filter.MaxViewCount);
 
-//PrintMovieNamesWithPhotoUrlWithLazyLoading();
+    if (filter.FromCreatedAt.HasValue)
+        query = query.Where(i => i.CreatedAt >= filter.FromCreatedAt);
 
-//AddTestGenre();
+    /* Not Null Special Case
+     * string.IsNullOrEmpty(filter.Name)
+        Movie Name is not null. we check nullability. so raw query is
 
-//AddTestMovie();
+            SELECT *
+            FROM [ef].[Movies] AS [m]
+            WHERE 0 = 1
 
-//UpdateTestGenre();
+        Thats impossible query, EF generate where like this: where 0=1.
+        it should be !string.IsNullOrEmpty(filter.Name)
+     */
 
-//DeleteTestGenre();
+    if (!string.IsNullOrEmpty(filter.Name))
+        query = query.Where(i => i.Name.Contains(filter.Name));
 
-//GetMovieWithCinemaData();
+    //Now entity lives in memory.
+    var movies = query.ToList();
 
-//GetMovieWithCinemaDataFromJson();
+    foreach (var movie in movies)
+    {
+        Console.WriteLine("Movie name is: {0}", movie.Name);
+    }
+}
 
-//await ConcurrencyTest();
-
-//DiscriminatorTest();
-
-//GlobalQueryFilterTest();
-
-//TopActorsByMovies();
-
-//PrintDirectorFullNameByGenre();
-
-//ViewModelTest();
-
-//ChangeTrackerTest();
-
-await CompiledQueryTest();
+QueryableTest();
 
 Console.ReadLine();
