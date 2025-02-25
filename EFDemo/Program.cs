@@ -773,6 +773,20 @@ void QueryableTest()
     }
 }
 
-QueryableTest();
+void SingleFirstFindTest()
+{
+    var guid = Guid.Parse("57D499FD-B58D-49B3-744F-08DD4F48B187");
+    //If entity has more than 1 value, throw error.
+    //We validate it has only 1 data our filter or one data comes from all the data
+    var single = dbContext.Genres.SingleOrDefault(x => x.Id == guid);
+
+    var first = dbContext.Genres.FirstOrDefault();
+
+    //If it was previously pulled with Change Tracker, it first checks the dbcontext cache.
+    //If it is there, it brings the data from there. If it is not there, it brings it from the DB.
+    var find = dbContext.Genres.Find(guid);
+}
+
+SingleFirstFindTest();
 
 Console.ReadLine();
