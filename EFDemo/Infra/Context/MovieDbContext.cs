@@ -70,6 +70,13 @@ public class MovieDbContext : DbContext
         //});
     }
 
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        //Common Configurations
+        configurationBuilder.Properties<string>().AreUnicode().HaveMaxLength(1_000);
+        configurationBuilder.Properties<double>().HavePrecision(3);
+    }
+
     //Compiled Queries
     public static readonly Func<MovieDbContext, Task<Movie>> C_MostViewedMovie =
         EF.CompileAsyncQuery((MovieDbContext dbContext) => dbContext.Movies.OrderByDescending(i => i.ViewCount).First());
