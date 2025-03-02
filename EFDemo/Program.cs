@@ -31,6 +31,9 @@ optionBuilder.UseSqlServer(connStr, options =>
     options.MigrationsHistoryTable("__EfMigrationHistory", schema: "ef");
     options.CommandTimeout(5_000);
     //options.EnableRetryOnFailure(maxRetryCount: 5);
+
+    //Query Splitting Behavior
+    options.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery);
 });
 
 optionBuilder.UseLazyLoadingProxies(builder => builder.IgnoreNonVirtualNavigations(true));
@@ -47,7 +50,6 @@ optionBuilder.AddInterceptors(new ModifiedByInterceptor());
 
 //Default EF behavior is tracking all.
 optionBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll);
-
 
 var dbContext = new MovieDbContext(optionBuilder.Options);
 
@@ -787,6 +789,19 @@ void SingleFirstFindTest()
     var find = dbContext.Genres.Find(guid);
 }
 
-SingleFirstFindTest();
+void SplitQueryTests()
+{
+    //dbContext.Movies
+    //         .Include(i => i.Photos)
+    //         .AsSplitQuery()
+    //         .ToList();
+
+    dbContext.Directors
+             .Include(i => i.Movies)
+             .ThenInclude(i => i.Photos)
+             .AsSplitQuery()
+             //.Select(i => new { i.FirstName, i.Movies.Count })
+             .ToList();
+}
 
 Console.ReadLine();
