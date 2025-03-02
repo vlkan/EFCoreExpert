@@ -22,7 +22,8 @@ public class MovieEntityConfiguration : BaseEntityTypeConfiguration<Movie>
         builder.HasMany(m => m.Photos)
             .WithOne(d => d.Movie)
             .HasForeignKey(m => m.MovieId)
-            .IsRequired(false);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade); // Delete Behaviour
 
         //Owned Types
         builder.OwnsOne(p => p.Release);
