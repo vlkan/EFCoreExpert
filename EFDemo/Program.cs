@@ -10,8 +10,6 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Data;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
 
 var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 var connStr = configuration.GetConnectionString("SqlServer");
